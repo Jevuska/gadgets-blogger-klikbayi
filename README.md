@@ -6,7 +6,7 @@ License: GPLv2
 ---
 
 ## KlikBayi Gadgets for Blogger/Blogspot
-**Marketing Tool for KlikBayi Affiliate** blogger gadget is created to support http://klikbayi.com/ affiliaters to selling klikbayi.com's product with embeded form or button order into **Blogger** blog.
+**Marketing Tool for KlikBayi Affiliate** blogger gadget is created to support http://klikbayi.com/ affiliaters to selling klikbayi.com's product with embeded form or button order into [Blogger](https://www.blogger.com/ "Blogger") blog.
 
 ## Installation
 1. Download XML file of gadgets https://github.com/Jevuska/gadgets-blogger-klikbayi/releases/download/v1.0/gadgets-blogger-klikbayi.xml
