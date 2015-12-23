@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- BLOGGER GADGETS - KLIKBAYI - VERSION 1.0 -->
+<Module>
+	<ModulePrefs title="__MSG_kb_gadgets_title__" description="__MSG_kb_gadgets_description__" author="Jevuska" author_email="contact@jevuska.com">
+		<Require feature="views" />
+		<Require feature="dynamic-height" />
+		<Require feature="minimessage" />
+		<Require feature="setprefs" />
+		<Optional feature="skins" />
+		<Locale lang="all">
+			<msg name="kb_gadgets_title">KlikBayi.Com&#39;s Product</msg>
+			<msg name="kb_gadgets_description">Marketing Tool for KlikBayi Affiliate</msg>
+			<msg name="affiliate_id">Affiliate ID</msg>
+			<msg name="form_title">Form Title</msg>
+			<msg name="button_text">Button Text</msg>
+			<msg name="img_src">Image URL</msg>
+			<msg name="img_show">Show Image?</msg>
+			<msg name="form_order_type">Form Order Type</msg>
+			<msg name="form_order_style">Form Order Style</msg>
+			<msg name="full_name">Full Name</msg>
+			<msg name="email_address">Email</msg>
+			<msg name="address_zip">Shipping Address &amp; Zip Code</msg>
+			<msg name="city_province">City &amp; Province</msg>
+			<msg name="mobile_phone">Mobile Phone</msg>
+			<msg name="order_button">Order</msg>
+			<msg name="form_type">Form</msg>
+			<msg name="button_type">Button</msg>
+		</Locale>
+		<Locale lang="in">
+			<msg name="kb_gadgets_title">Produk KlikBayi&#46;Com</msg>
+			<msg name="kb_gadgets_description">Tool Pemasaran untuk para afiliasi Klikbayi</msg>
+			<msg name="affiliate_id">ID Afiliasi</msg>
+			<msg name="form_title">Judul Form</msg>
+			<msg name="button_text">Teks Tombol</msg>
+			<msg name="img_src">URL Gambar</msg>
+			<msg name="img_show">Tampilkan Gambar?</msg>
+			<msg name="form_order_type">Tipe Form</msg>
+			<msg name="form_order_style">Tampilan Form</msg>
+			<msg name="full_name">Nama Lengkap</msg>
+			<msg name="email_address">Alamat Email</msg>
+			<msg name="address_zip">Alamat Pengiriman &amp; Kodepos</msg>
+			<msg name="city_province">Kota &amp; Propinsi</msg>
+			<msg name="mobile_phone">Nomor Handphone</msg>
+			<msg name="order_button">Pesan</msg>
+			<msg name="form_type">Bentuk Form</msg>
+			<msg name="button_type">Bentuk Tombol</msg>
+		</Locale>
+	</ModulePrefs>
+	<UserPref name="klikbayi_aff" display_name="__MSG_affiliate_id__" default_value="" />
+	<UserPref name="klikbayi_title" display_name="__MSG_form_title__" default_value="" />
+	<UserPref name="klikbayi_btn_txt" display_name="__MSG_button_text__" default_value="__MSG_order_button__" />
+	<UserPref name="klikbayi_image" display_name="__MSG_img_src__" default_value="" />
+	<UserPref name="klikbayi_choice" display_name="__MSG_img_show__" datatype="bool" default_value="false" />
+	<UserPref name="klikbayi_type" display_name="__MSG_form_order_type__" default_value="form" datatype="enum">
+		<EnumValue value="form" display_value="__MSG_form_type__" />
+		<EnumValue value="button" display_value="__MSG_button_type__" />
+	</UserPref>
+	<UserPref name="klikbayi_style" display_name="__MSG_form_order_style__" default_value="placeholder" datatype="enum">
+		<EnumValue value="inline" display_value="Inline" />
+		<EnumValue value="right" display_value="Right" />
+		<EnumValue value="left" display_value="Left" />
+		<EnumValue value="placeholder" display_value="Placeholder" />
+	</UserPref>
+	<Content type="html"><![CDATA[
+	    <style>
+		#klikbayi_container img {
+			max-width: 100%;
+		}
+		
+		#klikbayi_container table {
+			border-collapse: separate;
+			border-spacing: 0;
+			border-width: 1px 0 0 1px;
+			margin: 0 0 1.75em;
+			table-layout: fixed;
+			width: 100%;
+		}
+
+		#klikbayi_container th, #klikbayi_container td {
+			padding: 0.4375em;
+			border-width: 0px 1px 1px 0px;
+			font-weight: normal;
+			text-align: left;
+		}
+
+		#klikbayi_container table, #klikbayi_container th, #klikbayi_container td {
+			border: 1px solid #D1D1D1;
+		}
+
+		#klikbayi_container input[type="text"], #klikbayi_container input[type="email"], #klikbayi_container input[type="tel"], #klikbayi_container textarea {
+			
+			background: #F7F7F7 none repeat scroll 0% 0%;
+			border: 1px solid #D1D1D1;
+			border-radius: 2px;
+			color: #686868;
+			line-height: normal;
+			padding: 0.461538em 0.538462em;
+			width: 100%;
+		}
+
+		#klikbayi_container button, #klikbayi_container input, #klikbayi_container select, #klikbayi_container textarea {
+			font-size: 0.8125rem;
+			line-height: 1.61538;
+		}
+		</style>
+		<div id="klikbayi_container"></div>
+		<script type="text/javascript">
+			var prefs = new gadgets.Prefs();
+			function klikbayiCreateHtml()
+			{
+				var aff = prefs.getString( "klikbayi_aff" );
+				
+				if ( "" == aff )
+					return false;
+					
+				var type = prefs.getString( "klikbayi_type" ),
+					form_title = prefs.getString( "klikbayi_title" ),
+					button_text = prefs.getString( "klikbayi_btn_txt" ),
+					element = document.getElementById( "klikbayi_container" ),
+					size = ["auto", "auto", "px"],
+					styles = prefs.getString( "klikbayi_style" ),
+					post_in = [],
+					post_not_in = [],
+					content = "",
+					html = "";
+				
+				
+				
+				element.style.height = 250;
+				if ( true == prefs.getBool( "klikbayi_choice" ) ) {
+					if ( "" != prefs.getString( "klikbayi_image" ) )
+						content = '<img src="' + prefs.getString( "klikbayi_image" ) + '">';
+				}
+				
+				head = "";
+				
+				if ( "" != content )
+					head += '<div class="klikbayi-content">' + content + '</div>';
+					
+				if ( "" != form_title )
+					head += '<h3>' + form_title + '</h3>';
+					
+				hwstring = formHwstring( size[0], size[1], size[2] );
+				
+				html = '<div id="klikbayi-container';
+				
+				if ( "form" == type ) {
+					if ( "" != hwstring )
+						var size = " style=' " + hwstring + "'";
+					else
+						var size = "";
+					
+					form   = klikbayiFormOrder( button_text, "submit", head, styles, aff );
+					html  += '"'+ size +'>' + form + '</div>';
+				}
+					
+				if ( "button" == type ) {
+					form   = klikbayiFormOrder( button_text, "submit", '', styles, aff );
+					button = klikbayiButtonOrder( button_text, "button", id = "klikbayi_button", true, form_title, size );
+					html += '-popup" style="display:none;">' + form + '</div>' + button;
+				}
+				
+				klikbayiSetContent( element, html );
+			}
+
+			function klikbayiFormOrder( button_text, type, head, styles, aff )
+			{
+				var url   = klikbayiUrl( "aff", aff );
+					html  = head;
+					
+				html += '<form action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
+				
+				var item = klikbayiOrderArray();
+				
+				for ( var key in item ) {
+					if ( item.hasOwnProperty( key ) ) {
+						var input_type  = ( "email" == key || 'tel' == key ) ? key : "text";
+						var placeholder = ( "placeholder" != styles ) ? '' : item[key][0] ;
+						html += klikbayiInputOrder( key, item[key][0], input_type, placeholder, item[key][1], styles );
+					}
+				}
+				
+				html += "</table>";
+				html += klikbayiButtonOrder( button_text, type, id = "btn-klikbayi", false, "", ""  );
+				html += "</form>";
+				
+				return html;
+			}
+
+			function klikbayiInputOrder( key, item_title, input_type, placeholder, name, styles  ) {
+				
+				var pos   = '<th><label for="klikbayi_' + key + '">' + item_title + '</label></th>',
+					html  = "<tr>";
+				
+				if ( "inline" == styles ) {
+					html += pos;
+					html += "</tr><tr>";
+				}
+				
+				if ( "left" == styles )
+					html += pos;
+				
+				html += '<td><input type="' + input_type + '" id="klikbayi_' + key + '" value="" class="form-control klikbayi_' + key + '" placeholder="' + placeholder + '" name="' + name + '" required /></td>';
+				
+				if ( "right" == styles )
+					html += pos;
+				
+				html += "</tr>";
+				
+				return html;
+			}
+			
+			function klikbayiButtonOrder( button_text, type, id, btn_input, form_title, size ) {
+				var class_btn = "button button-primary";
+				
+				if ( false != btn_input ) {
+					hw = "";
+					
+					if ( 0 < size[0] )
+						hw += "width=" + size[0];
+					
+					if ( 0 < size[1] )
+						hw += "&amp;height=" + size[1];
+					
+					if ( '' == hw )
+						hw += "width=500&amp;height=500";
+					
+					html = '<input alt="#TB_inline?' + hw + '&amp;inlineId=klikbayi-container-popup" title="' + form_title + '" value="' + button_text + '" class="' + class_btn + '" type="' + type + '" id="' + id + '_popup" />';
+					
+				} else {
+					html = '<button class="' + class_btn + '" type="' + type + '" id="' + id + '">' + button_text + '</button>';
+				}
+				
+				return html;
+			}
+			
+			function klikbayiOrderArray()
+			{
+				obj = {
+					"name": [ prefs.getMsg( "full_name" ), "nama"],
+					"email": [ prefs.getMsg( "email_address" ), "email"],
+					"address": [ prefs.getMsg( "address_zip" ), "alamat"],
+					"citizen": [ prefs.getMsg( "city_province" ), "kota"],
+					"tel": [ prefs.getMsg( "mobile_phone" ), "telpon"]
+				};
+				return obj;
+			}
+			
+			function klikbayiUrl( options, aff ) {
+				
+				args = new Array;
+				
+				if ( "" == options )
+					return;
+				
+				url    = "http://www.klikbayi.com";
+				domain = "klikbayi.com";
+				
+				if ( "" != aff )
+					aff = "?ref=" + aff;
+					
+				args   = {
+					"domain": domain,
+					"url": url,
+					"aff": url + "/order1.php" + aff,
+				};
+				
+				if ( "" != args[options] )
+					return args[options];
+				return;
+			}
+			
+			function formHwstring( width, height, unit ) {
+				var hwstring = "",
+					unit = unit.replace( "%%", "%");
+					
+				if ( 0 != width ) {
+					if ( "auto" == width )
+						unit = "";
+						
+					hwstring += "width:" + width + unit + ";";
+				}
+				
+				if ( 0 != height ) {
+					if ( "auto" == height )
+						unit = "";
+					hwstring += "height:" + height + unit;
+				}
+				return hwstring;
+			};
+			
+			function klikbayiSetContent( element, html ) {
+				element.innerHTML = html;
+				var btn_popup = document.getElementById( "klikbayi_button_popup" );
+				if ( null != btn_popup ) {
+					btn_popup.addEventListener( "click", function( e ) {
+						e.target.remove();
+						document.getElementById( "klikbayi-container-popup" ).removeAttribute( "style" );
+					}, false);
+				}
+				gadgets.window.adjustHeight();
+			}
+			gadgets.util.registerOnLoadHandler( klikbayiCreateHtml );
+		</script>
+		]]>
+	</Content>
+</Module>
