@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- BLOGGER GADGETS - KLIKBAYI - VERSION 1.0 -->
+<!-- BLOGGER GADGETS - KLIKBAYI - VERSION 1.1 -->
 <Module>
-	<ModulePrefs title="__MSG_kb_gadgets_title__" description="__MSG_kb_gadgets_description__" author="Jevuska" author_email="contact@jevuska.com">
+	<ModulePrefs title="__MSG_kb_gadgets_title__" description="__MSG_kb_gadgets_description__" author="Jevuska" author_email="contact@jevuska.com" title_url="http://klikbayi.com/">
+		<Require feature="google.blog"/>
+		<Optional feature="skins"/>
+		<Require feature="dynamic-height"/>
+		<Require feature="minimessage"/>
+		<Require feature="setprefs"/>
 		<Require feature="views" />
-		<Require feature="dynamic-height" />
-		<Require feature="minimessage" />
-		<Require feature="setprefs" />
-		<Optional feature="skins" />
 		<Locale lang="all">
 			<msg name="kb_gadgets_title">KlikBayi.Com&#39;s Product</msg>
 			<msg name="kb_gadgets_description">Marketing Tool for KlikBayi Affiliate</msg>
@@ -25,6 +26,7 @@
 			<msg name="order_button">Order</msg>
 			<msg name="form_type">Form</msg>
 			<msg name="button_type">Button</msg>
+			<msg name="notice_aff_id">Your affiliate ID is not embedded yet.</msg>
 		</Locale>
 		<Locale lang="in">
 			<msg name="kb_gadgets_title">Produk KlikBayi&#46;Com</msg>
@@ -44,9 +46,10 @@
 			<msg name="order_button">Pesan</msg>
 			<msg name="form_type">Bentuk Form</msg>
 			<msg name="button_type">Bentuk Tombol</msg>
+			<msg name="notice_aff_id">ID Afiliasi Anda belum dimasukkan.</msg>
 		</Locale>
 	</ModulePrefs>
-	<UserPref name="klikbayi_aff" display_name="__MSG_affiliate_id__" default_value="" />
+	<UserPref name="klikbayi_aff" display_name="__MSG_affiliate_id__" default_value="" required="true"/>
 	<UserPref name="klikbayi_title" display_name="__MSG_form_title__" default_value="" />
 	<UserPref name="klikbayi_btn_txt" display_name="__MSG_button_text__" default_value="__MSG_order_button__" />
 	<UserPref name="klikbayi_image" display_name="__MSG_img_src__" default_value="" />
@@ -103,92 +106,81 @@
 			line-height: 1.61538;
 		}
 		</style>
-		<div id="klikbayi_container"></div>
+		
 		<script type="text/javascript">
-			var prefs = new gadgets.Prefs();
-			function klikbayiCreateHtml()
-			{
-				var aff = prefs.getString( "klikbayi_aff" );
-				
-				if ( "" == aff )
-					return false;
-					
+			var element = document.createElement( "div" );
+			element.setAttribute( "id", "klikbayi_container" );
+			document.body.appendChild( element );
+			
+			gadgets.util.registerOnLoadHandler( klikBayiCreateHtml );
+			
+			function klikBayiCreateHtml() {
+				var prefs = new gadgets.Prefs();
 				var type = prefs.getString( "klikbayi_type" ),
 					form_title = prefs.getString( "klikbayi_title" ),
+					form_title = unescape( form_title ).trim(),
 					button_text = prefs.getString( "klikbayi_btn_txt" ),
-					element = document.getElementById( "klikbayi_container" ),
-					size = ["auto", "auto", "px"],
-					styles = prefs.getString( "klikbayi_style" ),
-					post_in = [],
-					post_not_in = [],
-					content = "",
-					html = "";
+					button_text = unescape( button_text ).trim(),
+					styles = prefs.getString( "klikbayi_style" );
 				
+				var post_in = post_not_in = [];
+				var html = content = head = "";
 				
+				var aff = KlikBayiNotice( prefs );
 				
-				element.style.height = 250;
-				if ( true == prefs.getBool( "klikbayi_choice" ) ) {
+				html += '<div id="klikbayi-container';
+				
+				if ( prefs.getBool( "klikbayi_choice" ) ) {
 					if ( "" != prefs.getString( "klikbayi_image" ) )
 						content = '<img src="' + prefs.getString( "klikbayi_image" ) + '">';
-				}
-				
-				head = "";
+				} 
 				
 				if ( "" != content )
 					head += '<div class="klikbayi-content">' + content + '</div>';
 					
 				if ( "" != form_title )
 					head += '<h3>' + form_title + '</h3>';
+				
+				if ( 1 > button_text.length )
+					button_text = "__MSG_order_button__";
 					
-				hwstring = formHwstring( size[0], size[1], size[2] );
-				
-				html = '<div id="klikbayi-container';
-				
 				if ( "form" == type ) {
-					if ( "" != hwstring )
-						var size = " style=' " + hwstring + "'";
-					else
-						var size = "";
-					
-					form   = klikbayiFormOrder( button_text, "submit", head, styles, aff );
-					html  += '"'+ size +'>' + form + '</div>';
+					form   = klikBayiFormOrder( button_text, "submit", head, styles, aff );
+					html  += '">' + form + '</div>';
 				}
-					
+				
 				if ( "button" == type ) {
-					form   = klikbayiFormOrder( button_text, "submit", '', styles, aff );
-					button = klikbayiButtonOrder( button_text, "button", id = "klikbayi_button", true, form_title, size );
+					form   = klikBayiFormOrder( button_text, "submit", head, styles, aff );
+					button = klikBayiButtonOrder( button_text, "button", "klikbayi_button", true, form_title );
 					html += '-popup" style="display:none;">' + form + '</div>' + button;
 				}
-				
-				klikbayiSetContent( element, html );
+				klikBayiSetContent( html );
 			}
 
-			function klikbayiFormOrder( button_text, type, head, styles, aff )
-			{
-				var url   = klikbayiUrl( "aff", aff );
+			function klikBayiFormOrder( button_text, type, head, styles, aff ) {
+				var url   = klikBayiUrl( "aff", aff );
 					html  = head;
 					
 				html += '<form action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
 				
-				var item = klikbayiOrderArray();
+				var item = klikBayiOrderArray();
 				
 				for ( var key in item ) {
 					if ( item.hasOwnProperty( key ) ) {
 						var input_type  = ( "email" == key || 'tel' == key ) ? key : "text";
 						var placeholder = ( "placeholder" != styles ) ? '' : item[key][0] ;
-						html += klikbayiInputOrder( key, item[key][0], input_type, placeholder, item[key][1], styles );
+						html += klikBayiInputOrder( key, item[key][0], input_type, placeholder, item[key][1], styles );
 					}
 				}
 				
 				html += "</table>";
-				html += klikbayiButtonOrder( button_text, type, id = "btn-klikbayi", false, "", ""  );
+				html += klikBayiButtonOrder( button_text, type, "btn-klikbayi", false, "" );
 				html += "</form>";
 				
 				return html;
 			}
 
-			function klikbayiInputOrder( key, item_title, input_type, placeholder, name, styles  ) {
-				
+			function klikBayiInputOrder( key, item_title, input_type, placeholder, name, styles  ) {
 				var pos   = '<th><label for="klikbayi_' + key + '">' + item_title + '</label></th>',
 					html  = "<tr>";
 				
@@ -210,33 +202,20 @@
 				return html;
 			}
 			
-			function klikbayiButtonOrder( button_text, type, id, btn_input, form_title, size ) {
-				var class_btn = "button button-primary";
-				
+			function klikBayiButtonOrder( button_text, type, id, btn_input, form_title ) {
+				var html = '<button class="button button-primary" type="';
 				if ( false != btn_input ) {
-					hw = "";
-					
-					if ( 0 < size[0] )
-						hw += "width=" + size[0];
-					
-					if ( 0 < size[1] )
-						hw += "&amp;height=" + size[1];
-					
-					if ( '' == hw )
-						hw += "width=500&amp;height=500";
-					
-					html = '<input alt="#TB_inline?' + hw + '&amp;inlineId=klikbayi-container-popup" title="' + form_title + '" value="' + button_text + '" class="' + class_btn + '" type="' + type + '" id="' + id + '_popup" />';
-					
+					html += type + '" id="' + id + '_popup"';
 				} else {
-					html = '<button class="' + class_btn + '" type="' + type + '" id="' + id + '">' + button_text + '</button>';
+					html += type + '" id="' + id + '"';
 				}
-				
+				html += '">' + button_text + '</button>';
 				return html;
 			}
 			
-			function klikbayiOrderArray()
-			{
-				obj = {
+			function klikBayiOrderArray() {
+				var prefs = new gadgets.Prefs();
+				var obj = {
 					"name": [ prefs.getMsg( "full_name" ), "nama"],
 					"email": [ prefs.getMsg( "email_address" ), "email"],
 					"address": [ prefs.getMsg( "address_zip" ), "alamat"],
@@ -246,9 +225,8 @@
 				return obj;
 			}
 			
-			function klikbayiUrl( options, aff ) {
-				
-				args = new Array;
+			function klikBayiUrl( options, aff ) {
+				var args = new Array;
 				
 				if ( "" == options )
 					return;
@@ -268,39 +246,42 @@
 				if ( "" != args[options] )
 					return args[options];
 				return;
-			}
+			}			
 			
-			function formHwstring( width, height, unit ) {
-				var hwstring = "",
-					unit = unit.replace( "%%", "%");
-					
-				if ( 0 != width ) {
-					if ( "auto" == width )
-						unit = "";
-						
-					hwstring += "width:" + width + unit + ";";
-				}
-				
-				if ( 0 != height ) {
-					if ( "auto" == height )
-						unit = "";
-					hwstring += "height:" + height + unit;
-				}
-				return hwstring;
-			};
-			
-			function klikbayiSetContent( element, html ) {
+			function klikBayiSetContent( html ) {
 				element.innerHTML = html;
 				var btn_popup = document.getElementById( "klikbayi_button_popup" );
 				if ( null != btn_popup ) {
 					btn_popup.addEventListener( "click", function( e ) {
 						e.target.remove();
 						document.getElementById( "klikbayi-container-popup" ).removeAttribute( "style" );
-					}, false);
+						gadgets.window.adjustHeight();
+					}, false );
 				}
 				gadgets.window.adjustHeight();
 			}
-			gadgets.util.registerOnLoadHandler( klikbayiCreateHtml );
+			
+			function KlikBayiNotice( prefs ) {
+				
+				var aff = prefs.getString( "klikbayi_aff" ),
+					aff = unescape( aff ).trim();
+				if ( 1 > aff.length ) {
+					var msg = new gadgets.MiniMessage(__MODULE_ID__);
+					
+					element.innerHTML = prefs.getMsg( "notice_aff_id" );
+					element.onmouseover = function() {
+						element.style.backgroundColor = "red";
+						element.style.color = "white";
+					};
+					
+					element.onmouseout = function() {
+						element.removeAttribute( "style" );
+					};
+					
+					msg.createDismissibleMessage( element );
+				}
+				return aff;
+			}
 		</script>
 		]]>
 	</Content>
