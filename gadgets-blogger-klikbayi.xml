@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- BLOGGER GADGETS - KLIKBAYI - VERSION 1.1 -->
+<!-- BLOGGER GADGETS - COPYRIGHT KLIKBAYI.COM - VERSION 1.2 -->
 <Module>
 	<ModulePrefs title="__MSG_kb_gadgets_title__" description="__MSG_kb_gadgets_description__" author="Jevuska" author_email="contact@jevuska.com" title_url="http://klikbayi.com/">
 		<Require feature="google.blog"/>
@@ -108,7 +108,8 @@
 		</style>
 		
 		<script type="text/javascript">
-			var element = document.createElement( "div" );
+			var textarea = document.createElement( "textarea" ),
+				element = document.createElement( "div" );
 			element.setAttribute( "id", "klikbayi_container" );
 			document.body.appendChild( element );
 			
@@ -117,9 +118,9 @@
 			function klikBayiCreateHtml() {
 				var prefs = new gadgets.Prefs();
 				var type = prefs.getString( "klikbayi_type" ),
-					form_title = prefs.getString( "klikbayi_title" ),
+					form_title = sanitizeText( prefs.getString( "klikbayi_title" ) ),
 					form_title = unescape( form_title ).trim(),
-					button_text = prefs.getString( "klikbayi_btn_txt" ),
+					button_text = sanitizeText( prefs.getString( "klikbayi_btn_txt" ) ),
 					button_text = unescape( button_text ).trim(),
 					styles = prefs.getString( "klikbayi_style" );
 				
@@ -263,7 +264,7 @@
 			
 			function KlikBayiNotice( prefs ) {
 				
-				var aff = prefs.getString( "klikbayi_aff" ),
+				var aff = sanitizeText( prefs.getString( "klikbayi_aff" ) ),
 					aff = unescape( aff ).trim();
 				if ( 1 > aff.length ) {
 					var msg = new gadgets.MiniMessage(__MODULE_ID__);
@@ -282,6 +283,31 @@
 				}
 				return aff;
 			}
+			
+			function sanitizeText( q ) {
+				var _text = stripTags( q );
+				
+				try {
+					textarea.innerHTML = _text;
+					_text = stripTags( textarea.value );
+				} catch ( er ) {}
+				
+				return _text;
+			}
+			
+			function stripTags( string ) {
+				var string = string || "";
+				
+				return string
+					.replace( /<!--[\s\S]*?(-->|$)/g, "" )
+					.replace( /<(script|style)[^>]*>[\s\S]*?(<\/\1>|$)/ig, "" )
+					.replace( /<\/?[a-z][\s\S]*?(>|$)/ig, "" )
+					.replace( /[\r\n\t ]|\xC2\xA0|&nbsp;/g, " " )
+					.replace( /^[,\s]+|[,\s]+$/g, "" ).replace( /,[,\s]*,/g, "," )
+					.replace( /\s+/g, " " )
+					.toLowerCase();
+			}
+		
 		</script>
 		]]>
 	</Content>
