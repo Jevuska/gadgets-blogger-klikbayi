@@ -9,7 +9,7 @@ License: GPLv2
 **Marketing Tool for KlikBayi Affiliate** blogger gadget is created to support http://klikbayi.com/ affiliaters to selling klikbayi.com's product with embeded form or button order into [Blogger](https://www.blogger.com/ "Blogger") blog.
 
 ## Installation
-1. Download XML file of gadgets https://github.com/Jevuska/gadgets-blogger-klikbayi/releases/download/v1.2/gadgets-blogger-klikbayi.xml
+1. Download XML file of gadgets https://github.com/Jevuska/gadgets-blogger-klikbayi/releases/download/v1.3/gadgets-blogger-klikbayi.xml
 2. Upload to your public host and take the xml url address.
 3. On `Blogger Dashboard`, select your blog.
 4. Go to `Layout` > `Add a Gadget` > `Add your own` tab, enter your url gadget, then `Add by URL`.
@@ -24,10 +24,16 @@ License: GPLv2
 ![screenshot 2](lib/assets/img/screenshot-2.jpg)
 
 ## Changelog
+* 1.3 = December 29, 2015
+ * Fix bug in Form
+ 
 * 1.0 = December 24, 2015
  * First official release!
 
 ## Upgrade Notice
+###### v1.2
+Fix form. Upgrade immediately.
+
 ###### v1.2
 Fix security related bug. Upgrade immediately.
 
