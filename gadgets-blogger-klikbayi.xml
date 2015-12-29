@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- BLOGGER GADGETS - COPYRIGHT KLIKBAYI.COM - VERSION 1.2 -->
+<!-- BLOGGER GADGETS - COPYRIGHT KLIKBAYI.COM - VERSION 1.3 -->
 <Module>
 	<ModulePrefs title="__MSG_kb_gadgets_title__" description="__MSG_kb_gadgets_description__" author="Jevuska" author_email="contact@jevuska.com" title_url="http://klikbayi.com/">
 		<Require feature="google.blog"/>
@@ -107,11 +107,11 @@
 		}
 		</style>
 		
+		<div id="klikbayi_container"></div>
+		
 		<script type="text/javascript">
 			var textarea = document.createElement( "textarea" ),
-				element = document.createElement( "div" );
-			element.setAttribute( "id", "klikbayi_container" );
-			document.body.appendChild( element );
+				element  = document.getElementById( "klikbayi_container" );
 			
 			gadgets.util.registerOnLoadHandler( klikBayiCreateHtml );
 			
@@ -127,7 +127,7 @@
 				var post_in = post_not_in = [];
 				var html = content = head = "";
 				
-				var aff = KlikBayiNotice( prefs );
+				var aff = klikBayiNotice( prefs );
 				
 				html += '<div id="klikbayi-container';
 				
@@ -153,7 +153,7 @@
 				if ( "button" == type ) {
 					form   = klikBayiFormOrder( button_text, "submit", head, styles, aff );
 					button = klikBayiButtonOrder( button_text, "button", "klikbayi_button", true, form_title );
-					html += '-popup" style="display:none;">' + form + '</div>' + button;
+					html  += '-popup" style="display:none;">' + form + '</div>' + button;
 				}
 				klikBayiSetContent( html );
 			}
@@ -162,7 +162,7 @@
 				var url   = klikBayiUrl( "aff", aff );
 					html  = head;
 					
-				html += '<form action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
+				html += '<form target="_blank" action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
 				
 				var item = klikBayiOrderArray();
 				
@@ -204,11 +204,11 @@
 			}
 			
 			function klikBayiButtonOrder( button_text, type, id, btn_input, form_title ) {
-				var html = '<button class="button button-primary" type="';
+				var html = '<button class="button button-primary" name="submit" type="';
 				if ( false != btn_input ) {
-					html += type + '" id="' + id + '_popup"';
+					html += type + '" id="' + id + '_popup';
 				} else {
-					html += type + '" id="' + id + '"';
+					html += type + '" id="' + id;
 				}
 				html += '">' + button_text + '</button>';
 				return html;
@@ -232,7 +232,7 @@
 				if ( "" == options )
 					return;
 				
-				url    = "http://www.klikbayi.com";
+				url    = "http://klikbayi.com";
 				domain = "klikbayi.com";
 				
 				if ( "" != aff )
@@ -261,8 +261,8 @@
 				}
 				gadgets.window.adjustHeight();
 			}
-			
-			function KlikBayiNotice( prefs ) {
+
+			function klikBayiNotice( prefs ) {
 				
 				var aff = sanitizeText( prefs.getString( "klikbayi_aff" ) ),
 					aff = unescape( aff ).trim();
