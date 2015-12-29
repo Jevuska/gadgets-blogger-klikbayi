@@ -304,8 +304,7 @@
 					.replace( /<\/?[a-z][\s\S]*?(>|$)/ig, "" )
 					.replace( /[\r\n\t ]|\xC2\xA0|&nbsp;/g, " " )
 					.replace( /^[,\s]+|[,\s]+$/g, "" ).replace( /,[,\s]*,/g, "," )
-					.replace( /\s+/g, " " )
-					.toLowerCase();
+					.replace( /\s+/g, " " );
 			}
 		
 		</script>
