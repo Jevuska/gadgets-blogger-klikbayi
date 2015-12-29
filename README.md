@@ -31,7 +31,7 @@ License: GPLv2
  * First official release!
 
 ## Upgrade Notice
-###### v1.2
+###### v1.3
 Fix form. Upgrade immediately.
 
 ###### v1.2
