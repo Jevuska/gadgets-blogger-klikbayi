@@ -1,7 +1,7 @@
 ---
 Contributors: Jevuska
 Donate link: http://www.jevuska.com/donate/
-Version: 1.2
+Version: 1.3
 License: GPLv2
 ---
 
