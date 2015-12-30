@@ -145,42 +145,43 @@
 					styles = prefs.getString( "klikbayi_style" );
 				
 				var post_in = post_not_in = [];
-				var html = content = head = "";
+				var html = content = "";
 				
 				var aff = klikBayiNotice( prefs );
 				
 				html += '<div id="klikbayi-container';
 				
-				if ( prefs.getBool( "klikbayi_choice" ) ) {
-					if ( "" != prefs.getString( "klikbayi_image" ) )
-						content = '<img src="' + prefs.getString( "klikbayi_image" ) + '">';
-				} 
-				
-				if ( "" != content )
-					head += '<div class="klikbayi-content">' + content + '</div>';
-					
-				if ( "" != form_title )
-					head += '<h3>' + form_title + '</h3>';
-				
 				if ( 1 > button_text.length )
 					button_text = "__MSG_order_button__";
-					
+				
 				if ( "form" == type ) {
-					form   = klikBayiFormOrder( button_text, "button", head, styles, aff );
+					form   = klikBayiFormOrder( button_text, "button", form_title, styles, aff );
 					html  += '">' + form + '</div>';
 				}
 				
 				if ( "button" == type ) {
-					form   = klikBayiFormOrder( button_text, "button", head, styles, aff );
+					form   = klikBayiFormOrder( button_text, "button", form_title, styles, aff );
 					button = klikBayiButtonOrder( button_text, "button", "klikbayi_button", true, form_title );
 					html  += '-popup" style="display:none;">' + form + '</div>' + button;
 				}
 				klikBayiSetContent( html );
 			}
 
-			function klikBayiFormOrder( button_text, type, head, styles, aff ) {
+			function klikBayiFormOrder( button_text, type, form_title, styles, aff ) {
+				
+				var prefs = new gadgets.Prefs();
 				var url   = klikBayiUrl( "aff", aff );
-					html  = head;
+				
+				html = '';
+				
+				if ( prefs.getBool( "klikbayi_choice" ) ) {
+					if ( "" != prefs.getString( "klikbayi_image" ) ) {
+						html += '<div class="klikbayi-content"><img id="klikbayi_img" src="' + decodeURIComponent( prefs.getString( "klikbayi_image" ) ) + '" alt="' + form_title + '"></div>';
+					}
+				}
+				
+				if ( "" != form_title )
+					html += '<h3>' + form_title + '</h3>';
 					
 				html += '<form action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
 				
@@ -257,7 +258,7 @@
 				
 				if ( "" != aff )
 					aff = "?ref=" + aff;
-					
+				
 				args   = {
 					"domain": domain,
 					"url": url,
@@ -267,9 +268,11 @@
 				if ( "" != args[options] )
 					return args[options];
 				return;
-			}			
+			}
 			
-			function klikBayiSetContent( html ) {
+			function klikBayiSetContent( html )
+			{
+				var prefs = new gadgets.Prefs();
 				element.innerHTML = html;
 				
 				var form      = document.getElementById( "klikbayi" );
@@ -300,15 +303,21 @@
 					}, false );
 				}
 				
+				var img = document.getElementById( "klikbayi_img" );
+				if ( prefs.getBool( "klikbayi_choice" ) && "" != prefs.getString( "klikbayi_image" ) )
+				{
+					img.setAttribute( "width", img.clientWidth );
+					img.setAttribute( "height", img.clientHeight );
+				}
 				gadgets.window.adjustHeight();
 			}
 			
 			function makePOSTRequest( url, postdata ) {
-			   var params = {};
-			   postdata = gadgets.io.encodeValues( postdata );
-			   params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
-			   params[gadgets.io.RequestParameters.POST_DATA]= postdata;
-			   gadgets.io.makeRequest( url, response, params ); 
+				var params = {};
+				postdata = gadgets.io.encodeValues( postdata );
+				params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
+				params[gadgets.io.RequestParameters.POST_DATA]= postdata;
+				gadgets.io.makeRequest( url, response, params ); 
 			};
 			
 			function response( obj ) {
