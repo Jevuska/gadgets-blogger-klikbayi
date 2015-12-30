@@ -292,6 +292,9 @@
 						var address = document.getElementById( "klikbayi_address" ).value;
 						var citizen = document.getElementById( "klikbayi_citizen" ).value;
 						var tel = document.getElementById( "klikbayi_tel" ).value;
+						var elError = document.getElementById( "klikbayi_error_msg" );
+						elError.removeAttribute( "style" );
+						elError.innerHTML = "";
 						var postdata = { nama : name, email : email, alamat : address, kota : citizen, telpon : tel };
 						makePOSTRequest( url, postdata );
 					}, false );
