@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- BLOGGER GADGETS - COPYRIGHT KLIKBAYI.COM - VERSION 1.3 -->
+<!-- BLOGGER GADGETS - COPYRIGHT KLIKBAYI.COM - VERSION 1.4 -->
 <Module>
 	<ModulePrefs title="__MSG_kb_gadgets_title__" description="__MSG_kb_gadgets_description__" author="Jevuska" author_email="contact@jevuska.com" title_url="http://klikbayi.com/">
 		<Require feature="google.blog"/>
@@ -27,6 +27,8 @@
 			<msg name="form_type">Form</msg>
 			<msg name="button_type">Button</msg>
 			<msg name="notice_aff_id">Your affiliate ID is not embedded yet.</msg>
+			<msg name="notice_error">Error on input.</msg>
+			<msg name="notice_success">Success!. Please check your email.</msg>
 		</Locale>
 		<Locale lang="in">
 			<msg name="kb_gadgets_title">Produk KlikBayi&#46;Com</msg>
@@ -47,6 +49,8 @@
 			<msg name="form_type">Bentuk Form</msg>
 			<msg name="button_type">Bentuk Tombol</msg>
 			<msg name="notice_aff_id">ID Afiliasi Anda belum dimasukkan.</msg>
+			<msg name="notice_error">Ada kesalahan input.</msg>
+			<msg name="notice_success">Berhasil!. Silahkan periksa email Anda.</msg>
 		</Locale>
 	</ModulePrefs>
 	<UserPref name="klikbayi_aff" display_name="__MSG_affiliate_id__" default_value="" required="true"/>
@@ -105,11 +109,27 @@
 			font-size: 0.8125rem;
 			line-height: 1.61538;
 		}
+		
+		.mmlib_table {
+			background-color: #fff4c2;
+			border-collapse: separate;
+			border-spacing: 0px;
+			font: bold 9px arial,sans-serif;
+			padding: 1px 0px;
+			width: 100%;
+		}
+		
+		.mmlib_xlink {
+			color: #fff;
+			cursor: pointer;
+			font: normal 1.1em arial,sans-serif;
+			font-weight: bold;
+		}
 		</style>
-		
 		<div id="klikbayi_container"></div>
-		
+		<div id="klikbayi_error_msg"></div>
 		<script type="text/javascript">
+			
 			var textarea = document.createElement( "textarea" ),
 				element  = document.getElementById( "klikbayi_container" );
 			
@@ -146,12 +166,12 @@
 					button_text = "__MSG_order_button__";
 					
 				if ( "form" == type ) {
-					form   = klikBayiFormOrder( button_text, "submit", head, styles, aff );
+					form   = klikBayiFormOrder( button_text, "button", head, styles, aff );
 					html  += '">' + form + '</div>';
 				}
 				
 				if ( "button" == type ) {
-					form   = klikBayiFormOrder( button_text, "submit", head, styles, aff );
+					form   = klikBayiFormOrder( button_text, "button", head, styles, aff );
 					button = klikBayiButtonOrder( button_text, "button", "klikbayi_button", true, form_title );
 					html  += '-popup" style="display:none;">' + form + '</div>' + button;
 				}
@@ -162,7 +182,7 @@
 				var url   = klikBayiUrl( "aff", aff );
 					html  = head;
 					
-				html += '<form target="_blank" action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
+				html += '<form action="' + url + '" id="klikbayi" method="post"><table id="klikbayi_table" class="klikbayi_table_' + styles + '">';
 				
 				var item = klikBayiOrderArray();
 				
@@ -180,7 +200,7 @@
 				
 				return html;
 			}
-
+			
 			function klikBayiInputOrder( key, item_title, input_type, placeholder, name, styles  ) {
 				var pos   = '<th><label for="klikbayi_' + key + '">' + item_title + '</label></th>',
 					html  = "<tr>";
@@ -251,7 +271,11 @@
 			
 			function klikBayiSetContent( html ) {
 				element.innerHTML = html;
+				
+				var form      = document.getElementById( "klikbayi" );
+				var btn       = document.getElementById( "btn-klikbayi" );
 				var btn_popup = document.getElementById( "klikbayi_button_popup" );
+				
 				if ( null != btn_popup ) {
 					btn_popup.addEventListener( "click", function( e ) {
 						e.target.remove();
@@ -259,11 +283,60 @@
 						gadgets.window.adjustHeight();
 					}, false );
 				}
+				
+				if ( null != btn ) {
+					btn.addEventListener( "click", function( e ) {
+						var url = form.getAttribute( 'action' );
+						var name = document.getElementById( "klikbayi_name" ).value;
+						var email = document.getElementById( "klikbayi_email" ).value;
+						var address = document.getElementById( "klikbayi_address" ).value;
+						var citizen = document.getElementById( "klikbayi_citizen" ).value;
+						var tel = document.getElementById( "klikbayi_tel" ).value;
+						var postdata = { nama : name, email : email, alamat : address, kota : citizen, telpon : tel };
+						makePOSTRequest( url, postdata );
+					}, false );
+				}
+				
 				gadgets.window.adjustHeight();
 			}
-
+			
+			function makePOSTRequest( url, postdata ) {
+			   var params = {};
+			   postdata = gadgets.io.encodeValues( postdata );
+			   params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
+			   params[gadgets.io.RequestParameters.POST_DATA]= postdata;
+			   gadgets.io.makeRequest( url, response, params ); 
+			};
+			
+			function response( obj ) {
+				if ( 200 == obj.rc ) {
+					r = obj.text;
+					klikBayiNoticeSuccess( r );
+				}
+				gadgets.window.adjustHeight();
+			};
+			
+			function klikBayiNoticeSuccess( r ) {
+				var prefs = new gadgets.Prefs();
+				var msg = new gadgets.MiniMessage(__MODULE_ID__);
+				var form = document.getElementById( "klikbayi" );
+				var elError = document.getElementById( "klikbayi_error_msg" );
+				if (  -1 != r.indexOf( "Error" ) ) {
+					elError.innerHTML = prefs.getMsg( "notice_error" );
+					var statusMsg = msg.createTimerMessage( elError, 5 );
+					statusMsg.style.backgroundColor = "red";
+					statusMsg.style.color = "white";
+				} else {
+					elError.removeAttribute( "style" );
+					elError.innerHTML = prefs.getMsg( "notice_success" );
+					var statusMsg = msg.createDismissibleMessage( elError );
+					statusMsg.style.backgroundColor = "green";
+					statusMsg.style.color = "white";
+					form.reset();
+				}
+			}
+			
 			function klikBayiNotice( prefs ) {
-				
 				var aff = sanitizeText( prefs.getString( "klikbayi_aff" ) ),
 					aff = unescape( aff ).trim();
 				if ( 1 > aff.length ) {
@@ -306,7 +379,6 @@
 					.replace( /^[,\s]+|[,\s]+$/g, "" ).replace( /,[,\s]*,/g, "," )
 					.replace( /\s+/g, " " );
 			}
-		
 		</script>
 		]]>
 	</Content>
